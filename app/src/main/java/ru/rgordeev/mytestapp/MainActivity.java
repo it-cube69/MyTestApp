@@ -1,6 +1,7 @@
 package ru.rgordeev.mytestapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -8,8 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,23 +19,39 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        Log.i("LIFECIRCLE", "onCreate was called");
+        init(savedInstanceState);
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.i("LIFECIRCLE", "onSaveInstanceState was called");
         outState.putSerializable("field", field);
         outState.putInt("turn", turn);
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        this.turn = savedInstanceState.getInt("turn", 0);
-        Serializable f = savedInstanceState.getSerializable("field");
-        if (f != null && f instanceof int[][]) {
-            this.field = (int[][]) f;
+    private void init(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            this.turn = 0;
+            this.field = new int[3][3];
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    field[i][j] = 0;
+                }
+            }
+        } else {
+            this.turn = savedInstanceState.getInt("turn", 0);
+            if (savedInstanceState.containsKey("field")) {
+                this.field = (int[][]) savedInstanceState.getSerializable("field");
+            } else {
+                this.field = new int[3][3];
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        field[i][j] = 0;
+                    }
+                }
+            }
         }
         LinearLayout linearLayout = findViewById(R.id.field);
         for (int index = 0; index < linearLayout.getChildCount(); index++) {
@@ -77,15 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    private void init() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                field[i][j] = 0;
-            }
-        }
-        turn = 0;
     }
 
     public void myMethod(View v) {
@@ -132,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 // do nothing
         }
         if (win() != 0) {
-            init();
+            init(null);
             ((Button) findViewById(R.id.button11)).setText("");
             ((Button) findViewById(R.id.button12)).setText("");
             ((Button) findViewById(R.id.button13)).setText("");
