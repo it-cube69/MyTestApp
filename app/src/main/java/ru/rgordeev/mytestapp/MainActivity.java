@@ -1,5 +1,6 @@
 package ru.rgordeev.mytestapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -139,27 +140,38 @@ public class MainActivity extends AppCompatActivity {
         }
         if (win() != 0) {
             init(null);
-            ((Button) findViewById(R.id.button11)).setText("");
-            ((Button) findViewById(R.id.button12)).setText("");
-            ((Button) findViewById(R.id.button13)).setText("");
-            ((Button) findViewById(R.id.button21)).setText("");
-            ((Button) findViewById(R.id.button22)).setText("");
-            ((Button) findViewById(R.id.button23)).setText("");
-            ((Button) findViewById(R.id.button31)).setText("");
-            ((Button) findViewById(R.id.button32)).setText("");
-            ((Button) findViewById(R.id.button33)).setText("");
         }
     }
 
     private int win() {
         if (winO()) {
-            Toast.makeText(this, "Выйграл О", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+            intent.putExtra("result", "Выйграл О");
+            startActivity(intent);
             return 2;
         } else if (winX()) {
-            Toast.makeText(this, "Выйграл X", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+            intent.putExtra("result", "Выйграл X");
+            startActivity(intent);
             return 1;
+        } else if (draw()) {
+            Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+            intent.putExtra("result", "Ничья");
+            startActivity(intent);
+            return 3;
         }
         return 0;
+    }
+
+    private boolean draw() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (field[i][j] == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private boolean winX() {
