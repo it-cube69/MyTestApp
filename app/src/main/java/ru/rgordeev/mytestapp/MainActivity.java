@@ -1,16 +1,15 @@
 package ru.rgordeev.mytestapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.util.Date;
-import java.util.Random;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +21,62 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("field", field);
+        outState.putInt("turn", turn);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        this.turn = savedInstanceState.getInt("turn", 0);
+        Serializable f = savedInstanceState.getSerializable("field");
+        if (f != null && f instanceof int[][]) {
+            this.field = (int[][]) f;
+        }
+        LinearLayout linearLayout = findViewById(R.id.field);
+        for (int index = 0; index < linearLayout.getChildCount(); index++) {
+            LinearLayout nextChild = (LinearLayout) linearLayout.getChildAt(index);
+            for (int buttonIndex = 0; buttonIndex < nextChild.getChildCount(); buttonIndex++) {
+                Button button = (Button) nextChild.getChildAt(buttonIndex);
+                String tag = button.getTag().toString();
+                switch (tag) {
+                    case "11":
+                        print(button, 0, 0);
+                        break;
+                    case "12":
+                        print(button, 0, 1);
+                        break;
+                    case "13":
+                        print(button, 0, 2);
+                        break;
+                    case "21":
+                        print(button, 1, 0);
+                        break;
+                    case "22":
+                        print(button, 1, 1);
+                        break;
+                    case "23":
+                        print(button, 1, 2);
+                        break;
+                    case "31":
+                        print(button, 2, 0);
+                        break;
+                    case "32":
+                        print(button, 2, 1);
+                        break;
+                    case "33":
+                        print(button, 2, 2);
+                        break;
+                    default:
+                        // do nothing
+                }
+            }
+        }
     }
 
     private void init() {
@@ -78,15 +133,15 @@ public class MainActivity extends AppCompatActivity {
         }
         if (win() != 0) {
             init();
-            ((Button)findViewById(R.id.button11)).setText("");
-            ((Button)findViewById(R.id.button12)).setText("");
-            ((Button)findViewById(R.id.button13)).setText("");
-            ((Button)findViewById(R.id.button21)).setText("");
-            ((Button)findViewById(R.id.button22)).setText("");
-            ((Button)findViewById(R.id.button23)).setText("");
-            ((Button)findViewById(R.id.button31)).setText("");
-            ((Button)findViewById(R.id.button32)).setText("");
-            ((Button)findViewById(R.id.button33)).setText("");
+            ((Button) findViewById(R.id.button11)).setText("");
+            ((Button) findViewById(R.id.button12)).setText("");
+            ((Button) findViewById(R.id.button13)).setText("");
+            ((Button) findViewById(R.id.button21)).setText("");
+            ((Button) findViewById(R.id.button22)).setText("");
+            ((Button) findViewById(R.id.button23)).setText("");
+            ((Button) findViewById(R.id.button31)).setText("");
+            ((Button) findViewById(R.id.button32)).setText("");
+            ((Button) findViewById(R.id.button33)).setText("");
         }
     }
 
@@ -188,8 +243,10 @@ public class MainActivity extends AppCompatActivity {
     private void print(Button button, int i, int j) {
         if (field[i][j] == 1) {
             button.setText("X");
-        } else {
+        } else if (field[i][j] == 2) {
             button.setText("O");
+        } else {
+            button.setText("");
         }
     }
 
