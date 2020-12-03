@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         int[] diag1 = extractDiag1();
         result = result || all(1, diag1);
 
-        int[] diag2 = extractDiag1();
+        int[] diag2 = extractDiag2();
         result = result || all(1, diag2);
 
         return result;
